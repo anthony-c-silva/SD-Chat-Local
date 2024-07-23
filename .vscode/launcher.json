@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Client",
+            "request": "launch",
+            "mainClass": "ClientInfo",
+            "args": ["1236"],
+            "cwd": "${workspaceFolder}/src/main/java"
+        }
+    ]
+}
