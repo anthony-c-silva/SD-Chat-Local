@@ -6,6 +6,7 @@ import java.io.*;
  * Implementa a interface IStableMulticast para entrega de mensagens.
  */
 public class Client implements IStableMulticast, Serializable {
+    
     /**
      * Método para entregar mensagens recebidas.
      * @param msg Mensagem recebida.
@@ -13,11 +14,13 @@ public class Client implements IStableMulticast, Serializable {
     public void deliver(String msg){
         System.out.println(msg);
     }
+
     /**
      * Método principal que inicializa o cliente e o middleware.
      * @param args Argumentos de linha de comando, espera-se que contenha a porta.
      */
     public static void main(String[] args) {
+
         // Cria um novo cliente
         Client cliente = new Client();
         // Inicializa o middleware com endereço de host, porta e o cliente
@@ -27,10 +30,10 @@ public class Client implements IStableMulticast, Serializable {
         while (true){
             String command = scanner.nextLine();
             if (command.equals("#clientes")){
-                middleware.getClients();
+                middleware.exibirClientes();
             }
             else if (command.equals("#buffer")){
-                middleware.getBuffer_Timestamps();
+                middleware.exibirConteudoETimestamps();
             }
             else if (command.equals("#exit")){
                 break;
