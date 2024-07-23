@@ -257,7 +257,7 @@ public class StableMulticast implements Serializable{
         }
         
         // Exibe o conteúdo das mensagens do buffer
-        System.out.println("Conteúdo do Buffer: " + mensagens);
+        System.out.println("Conteudo do Buffer: " + mensagens);
         
         // Exibe a matriz de timestamps
         System.out.println("Matriz de Timestamps:");

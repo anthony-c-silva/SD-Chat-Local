@@ -11,7 +11,7 @@ public class Client implements IStableMulticast, Serializable {
      * Método para entregar mensagens recebidas.
      * @param msg Mensagem recebida.
      */
-    public void deliver(String msg){
+    public void deliver(String msg) {
         System.out.println(msg);
     }
 
@@ -27,21 +27,31 @@ public class Client implements IStableMulticast, Serializable {
         StableMulticast middleware = new StableMulticast("localhost", Integer.valueOf(args[0]), cliente);
         // Scanner para ler comandos da linha de comando
         Scanner scanner = new Scanner(System.in);
-        while (true){
-            String command = scanner.nextLine();
-            if (command.equals("#clientes")){
-                middleware.exibirClientes();
+
+        // Loop principal para leitura de comandos do usuário
+        while (true) {
+            // Lê o próximo comando do usuário
+            String comando = scanner.nextLine();
+            
+            // Verifica se o comando é para exibir a lista de clientes
+            if (comando.equals("\\clientes")) {
+                middleware.exibirClientes(); // Chama o método para exibir os clientes conectados
             }
-            else if (command.equals("#buffer")){
-                middleware.exibirConteudoETimestamps();
+            // Verifica se o comando é para exibir o buffer e os timestamps
+            else if (comando.equals("\\buffer")) {
+                middleware.exibirConteudoETimestamps(); // Chama o método para exibir o buffer e os timestamps
             }
-            else if (command.equals("#exit")){
-                break;
+            // Verifica se o comando é para sair do loop
+            else if (comando.equals("\\exit")) {
+                break; // Sai do loop e encerra o programa
             }
-            else{
-                middleware.msend(command);
+            // Caso o comando não seja um dos comandos especiais, envia a mensagem em multicast
+            else {
+                middleware.msend(comando); // Envia a mensagem para todos os clientes
             }
         }
+
+        // Fecha o scanner
         scanner.close();
     }
 }
