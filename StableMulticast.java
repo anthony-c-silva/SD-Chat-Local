@@ -322,7 +322,7 @@ public class StableMulticast implements Serializable{
                 if (mensagemAtual.timestamp()[mensagemAtual.cliente().getID()] <= obterTimestampMinimo(mensagemAtual.cliente().getID())) {
                     // Remove a mensagem do buffer
                     buffer.remove(mensagemAtual);
-                    System.out.println("Mensagem removida do buffer: " + mensagemAtual.message());
+                   
                     indice--; // Ajusta o índice após remoção
                 }
                 indice++;
@@ -351,6 +351,24 @@ public class StableMulticast implements Serializable{
         return new byte[0]; // Retorna um array vazio em caso de erro
     }
 
+    /**
+     * Converte um array de bytes em um objeto Java.
+     * @param byteArray o array de bytes a ser desserializado
+     * @return o objeto desserializado, ou null se ocorrer um erro
+     */
+    public Object converteParaObject(byte[] byteArray) {
+        // Utiliza ByteArrayInputStream para ler os bytes do array
+        try (ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
+             ObjectInputStream objectStream = new ObjectInputStream(byteStream)) {
+
+            // Retorna o objeto desserializado
+            return objectStream.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            System.err.println("Falha na desserialização do objeto.");
+            ex.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Envia uma mensagem através de um socket especificado.
@@ -373,24 +391,7 @@ public class StableMulticast implements Serializable{
         }
     }
 
-    /**
-     * Converte um array de bytes em um objeto Java.
-     * @param byteArray o array de bytes a ser desserializado
-     * @return o objeto desserializado, ou null se ocorrer um erro
-     */
-    public Object converteParaObject(byte[] byteArray) {
-        // Utiliza ByteArrayInputStream para ler os bytes do array
-        try (ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
-             ObjectInputStream objectStream = new ObjectInputStream(byteStream)) {
 
-            // Retorna o objeto desserializado
-            return objectStream.readObject();
-        } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Falha na desserialização do objeto.");
-            ex.printStackTrace();
-            return null;
-        }
-    }
 
     /**
      * Recebe uma mensagem através de um socket especificado.
