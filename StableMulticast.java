@@ -427,7 +427,7 @@ public class StableMulticast implements Serializable{
                             this.buffer.add(sms);
                             if (sms.cliente().getID().intValue() != this.client.getID().intValue()) {
                               
-                                this.MCi[sms.cliente().getID()] = sms.timestamp();  // Essa linha deveria estar dentro do if no codigo do trab
+                                this.MCi[sms.cliente().getID()] = sms.timestamp();
                                 this.MCi[this.client.getID()][sms.cliente().getID()]++;
                             }
                             this.client.getClient().deliver(sms.message());
