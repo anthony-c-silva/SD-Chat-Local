@@ -418,46 +418,76 @@ public class StableMulticast implements Serializable{
      * @param socket socket a ser ouvido
      */
     private synchronized void listening(DatagramSocket skt) {
+        // Criação de uma nova thread para ouvir mensagens UDP de forma assíncrona
         Thread udpThread = new Thread(() -> {
             try {
-                // Loop para receber mensagens.
+                // Loop para receber mensagens enquanto a thread não for interrompida
                 while (!Thread.currentThread().isInterrupted()) {
+                    // Recebe a mensagem do socket
                     Message sms = receberMensagem(skt);
+                    
+                    // Verifica o comando da mensagem recebida
                     switch (sms.command()) {
                         case "msg":
+                            // Caso o comando seja "msg", adiciona a mensagem ao buffer
                             this.buffer.add(sms);
+                            
+                            // Atualiza os relógios lógicos caso o ID do cliente na mensagem
+                            // seja diferente do ID do cliente atual
                             if (sms.cliente().getID().intValue() != this.client.getID().intValue()) {
-                              
-                                this.MCi[sms.cliente().getID()] = sms.timestamp();
-                                this.MCi[this.client.getID()][sms.cliente().getID()]++;
+                                this.MCi[sms.cliente().getID()] = sms.timestamp(); // Atualiza o timestamp
+                                this.MCi[this.client.getID()][sms.cliente().getID()]++; // Incrementa o relógio lógico
                             }
+                            
+                            // Entrega a mensagem ao cliente
                             this.client.getClient().deliver(sms.message());
-
+                            
+                            // Verifica se há mensagens no buffer que podem ser eliminadas
                             verificarEliminarBuffer();
+                            
+                            // Mostra o buffer e os timestamps para fins de depuração
                             mostrarBufferETimestamps();
-
                             break;
+                        
                         case "join":
+                            // Caso o comando seja "join", configura o ID do cliente que está se juntando
                             sms.cliente().setID(this.clientes.size());
+                            
+                            // Adiciona o cliente à lista de clientes
                             clientes.add(sms.cliente());
+                            
+                            // Entrega uma mensagem de boas-vindas ao novo cliente
                             this.client.getClient().deliver(COLOR_CYAN + "Bem vindo(a) " + sms.cliente().getName() + " ao chat!" + COLOR_RESET);
-
+                            
+                            // Cria uma mensagem "hello" para o novo cliente
                             Message hello = new Message(null, "", this.client, "hello");
+                            
+                            // Define a lista de clientes na mensagem "hello"
                             hello.setClientList(clientes);
+                            
+                            // Envia a mensagem "hello" para o novo cliente através do socket unicast
                             enviarMensagem(hello, this.socket_unicast, sms.cliente().getIP(), sms.cliente().getPort());
                             break;
+                        
                         case "hello":
+                            // Caso o comando seja "hello", atualiza a lista de clientes
                             this.clientes = sms.getClientList();
+                            
+                            // Configura o ID do cliente atual para o tamanho da lista de clientes menos 1
                             this.client.setID(this.clientes.size() - 1);
+                            
+                            // Inicializa o relógio lógico para o cliente atual
                             this.MCi[this.client.getID()][this.client.getID()] = 0;
                             break;
                     }
                 }
             } catch (Exception e) {
+                // Imprime uma mensagem de erro caso ocorra uma exceção
                 System.err.println("Erro ao receber mensagens!");
                 e.printStackTrace();
             }
         });
+        // Inicia a thread
         udpThread.start();
     }
 
